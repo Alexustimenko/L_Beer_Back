@@ -1,30 +1,91 @@
 import { IncomingMessage, ServerResponse } from "http"
 import { parseBody } from "../utils/bodyParser"
-import { RegisterUserDTO } from "../types/user"
-import { createUser } from "../services/userService"
+import { createUser, findUserByEmail } from "../services/userService"
+import * as bcrypt from "bcryptjs"
+import * as jwt from "jsonwebtoken"
+
+const JWT_SECRET = "your_super_secret_key_123"
 
 export async function registerController(
   req: IncomingMessage,
   res: ServerResponse
 ) {
+  try {
+    const rawBody = await parseBody(req)
+    const data = JSON.parse(rawBody)
 
-  const rawBody = await parseBody(req)
+    if (!data.email || !data.password || !data.name) {
+      res.writeHead(400, { "Content-Type": "application/json" })
+      res.end(JSON.stringify({ message: "Все поля обязательны" }))
+      return
+    }
 
-  const data: RegisterUserDTO = JSON.parse(rawBody)
+    const user = createUser(data)
 
-  if (!data.email || !data.password || !data.name) {
-
+    res.writeHead(201, { "Content-Type": "application/json" })
+    res.end(JSON.stringify({
+      message: "Регистрация успешна",
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      }
+    }))
+  } catch (error: any) {
     res.writeHead(400, { "Content-Type": "application/json" })
-    res.end(JSON.stringify({ message: "Invalid data" }))
-    return
+    res.end(JSON.stringify({ message: error.message || "Ошибка регистрации" }))
   }
+}
 
-  const user = createUser(data)
+export async function loginController(
+  req: IncomingMessage,
+  res: ServerResponse
+) {
+  try {
+    const rawBody = await parseBody(req)
+    const data = JSON.parse(rawBody)
 
-  res.writeHead(201, { "Content-Type": "application/json" })
+    if (!data.email || !data.password) {
+      res.writeHead(400, { "Content-Type": "application/json" })
+      res.end(JSON.stringify({ message: "Email и пароль обязательны" }))
+      return
+    }
 
-  res.end(JSON.stringify({
-    message: "User registered",
-    user
-  }))
+    const user = findUserByEmail(data.email)
+    
+    if (!user) {
+      res.writeHead(401, { "Content-Type": "application/json" })
+      res.end(JSON.stringify({ message: "Неверный email или пароль" }))
+      return
+    }
+
+    const isPasswordValid = bcrypt.compareSync(data.password, user.password)
+    
+    if (!isPasswordValid) {
+      res.writeHead(401, { "Content-Type": "application/json" })
+      res.end(JSON.stringify({ message: "Неверный email или пароль" }))
+      return
+    }
+
+    const token = jwt.sign(
+      { id: user.id, email: user.email },
+      JWT_SECRET,
+      { expiresIn: "30d" }
+    )
+
+    res.writeHead(200, { "Content-Type": "application/json" })
+    res.end(JSON.stringify({
+      message: "Вход выполнен успешно",
+      user: {
+        id: user.id,
+        email: user.email,
+        name: user.name
+      },
+      token
+    }))
+
+  } catch (error) {
+    res.writeHead(500, { "Content-Type": "application/json" })
+    res.end(JSON.stringify({ message: "Ошибка сервера" }))
+  }
 }

@@ -4,5 +4,23 @@
     "email": "s9847883@gmail.com",
     "password": "1234",
     "name": "Стас"
+  },
+  {
+    "id": "1773494920596",
+    "email": "andrey@gmail.com",
+    "password": "123",
+    "name": "andrew"
+  },
+  {
+    "id": "1773495521140",
+    "email": "andrey1@gmail.com",
+    "password": "123",
+    "name": "andrew1"
+  },
+  {
+    "id": "1773495767167",
+    "email": "andro123@gmail.com",
+    "password": "$2b$10$WfeAsdUOLcz/m8KG1g2pYOpgpXVdyI34YfoA7aJWXU8HB2FfF2wp2",
+    "name": "andro"
   }
 ]
