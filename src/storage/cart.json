@@ -1,3 +1,10 @@
 {
-  "items": []
+  "items": [
+    {
+      "productId": "6",
+      "name": "Zero 1",
+      "price": 390,
+      "quantity": 1
+    }
+  ]
 }

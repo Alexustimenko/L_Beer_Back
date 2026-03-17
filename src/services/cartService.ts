@@ -5,8 +5,13 @@ import { Cart, CartItem } from "../types/cart";
 const cartPath = path.join(__dirname, "../storage/cart.json");
 
 function readCart(): Cart {
+  if (!fs.existsSync(cartPath)) {
+    fs.writeFileSync(cartPath, JSON.stringify({ items: [] }, null, 2));
+    return { items: [] };
+  }
   const raw = fs.readFileSync(cartPath, "utf-8");
-  return JSON.parse(raw);
+  const parsed = JSON.parse(raw || "{}");
+  return Array.isArray(parsed?.items) ? parsed : { items: [] };
 }
 
 function writeCart(cart: Cart): void {
