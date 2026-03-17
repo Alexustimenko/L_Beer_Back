@@ -7,11 +7,11 @@ const server = http.createServer(async (req: http.IncomingMessage, res: http.Ser
 
   // CORS
   res.setHeader("Access-Control-Allow-Origin", "*")
-  res.setHeader("Access-Control-Allow-Methods", "GET, POST, PUT, DELETE, OPTIONS")
-  res.setHeader("Access-Control-Allow-Headers", "Content-Type, Authorization")
+  res.setHeader("Access-Control-Allow-Methods", "GET,POST,PUT,DELETE,OPTIONS")
+  res.setHeader("Access-Control-Allow-Headers", "Content-Type")
 
   if (req.method === "OPTIONS") {
-    res.writeHead(204)
+    res.writeHead(200)
     res.end()
     return
   }
@@ -21,5 +21,5 @@ const server = http.createServer(async (req: http.IncomingMessage, res: http.Ser
 })
 
 server.listen(PORT, () => {
-  console.log(`Server started on port ${PORT}`)
+  console.log(`Server running on http://localhost:${PORT}`)
 })
