@@ -1,8 +1,26 @@
 [
-  { "id": 1, "name": "Lager 1", "price": 450, "category": "Cat 1" },
-  { "id": 2, "name": "Wheat 1", "price": 520, "category": "Cat 2" },
-  { "id": 3, "name": "Fest 1", "price": 600, "category": "Cat 3" },
-  { "id": 4, "name": "Dark 1", "price": 480, "category": "Cat 4" },
-  { "id": 5, "name": "Ale 1", "price": 550, "category": "Cat 5" },
-  { "id": 6, "name": "Zero 1", "price": 390, "category": "Cat 1" }
+  {
+    "id": "1",
+    "title": "Heineken",
+    "price": 5.5,
+    "image": "https://images.unsplash.com/photo-1608270586620-248524c67de9?auto=format&fit=crop&w=500&q=80",
+    "volume": "0.5 л",
+    "category": "Lager"
+  },
+  {
+    "id": "2",
+    "title": "Corona Extra",
+    "price": 6.2,
+    "image": "https://images.unsplash.com/photo-1584225064785-c62a8b43d148?auto=format&fit=crop&w=500&q=80",
+    "volume": "0.33 л",
+    "category": "Light"
+  },
+  {
+    "id": "1773824647785",
+    "title": "лидское 80",
+    "price": 10,
+    "image": "https://static.insales-cdn.com/r/3nUO4ssyuWw/rs:fit:1000:1000:1/plain/images/products/1/3878/341929766/%D0%96%D0%B8%D0%B3%D1%83%D0%BB%D0%B5%D0%B2%D1%81%D0%BA%D0%BE%D0%B5_80_%D0%B3%D0%BE%D0%B4_0_5%D0%BB..jpg@webp",
+    "volume": "5 литров",
+    "category": "Light"
+  }
 ]

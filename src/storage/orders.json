@@ -5,5 +5,25 @@
     "address": "апртьрмипс",
     "paymentMethod": "card",
     "captchaToken": "iamhuman"
+  },
+  {
+    "id": 1773823060751,
+    "items": [
+      {
+        "productId": "6",
+        "name": "Zero 1",
+        "price": 390,
+        "quantity": 1
+      },
+      {
+        "productId": "1773822953973",
+        "name": "Лидское 80",
+        "price": 10,
+        "quantity": 1
+      }
+    ],
+    "address": "Одинцова 31/3, 12",
+    "paymentMethod": "cash",
+    "captchaToken": "iamhuman"
   }
 ]
