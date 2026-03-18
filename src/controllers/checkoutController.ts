@@ -4,10 +4,13 @@ import * as fs from "fs";
 import * as path from "path";
 import { clearCart } from "../services/cartService";
 import { CheckoutDTO } from "../types/cart";
+import { requireAuth } from "../utils/requireAuth";
 
 const ordersPath = path.join(__dirname, "../storage/orders.json");
 
 export async function checkoutController(req: IncomingMessage, res: ServerResponse) {
+  const userId = requireAuth(req, res);
+  if (!userId) return;
 
   let data: CheckoutDTO;
   try {
@@ -18,7 +21,7 @@ export async function checkoutController(req: IncomingMessage, res: ServerRespon
     return;
   }
 
-  if (!data.address || !data.paymentMethod || !data.captchaToken) {
+  if (!data.address || !data.email || !data.phone || !data.paymentMethod || !data.captchaToken) {
     res.writeHead(400, { "Content-Type": "application/json" });
     res.end(JSON.stringify({ message: "Invalid order data" }));
     return;
@@ -45,6 +48,7 @@ export async function checkoutController(req: IncomingMessage, res: ServerRespon
 
   const order = {
     id: Date.now(),
+    userId,
     ...data
   };
 
@@ -52,7 +56,7 @@ export async function checkoutController(req: IncomingMessage, res: ServerRespon
 
   fs.writeFileSync(ordersPath, JSON.stringify(orders, null, 2));
 
-  clearCart();
+  clearCart(userId);
 
   res.writeHead(200, { "Content-Type": "application/json" });
   res.end(JSON.stringify({ message: "Order placed", order }));

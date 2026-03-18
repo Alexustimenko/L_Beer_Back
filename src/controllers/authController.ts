@@ -1,10 +1,10 @@
 import { IncomingMessage, ServerResponse } from "http"
 import { parseBody } from "../utils/bodyParser"
-import { createUser, findUserByEmail } from "../services/userService"
-import * as bcrypt from "bcryptjs"
-import * as jwt from "jsonwebtoken"
+import { createUser, findUserById, findUserByIdentifier, verifyUserPassword } from "../services/userService"
+import { createSession, deleteSession, getSession } from "../services/sessionService"
+import { parseCookies, setCookie } from "../utils/cookies"
 
-const JWT_SECRET = "your_super_secret_key_123"
+const SESSION_TTL_SECONDS = 60 * 10 // 10 минут
 
 export async function registerController(
   req: IncomingMessage,
@@ -14,7 +14,7 @@ export async function registerController(
     const rawBody = await parseBody(req)
     const data = JSON.parse(rawBody)
 
-    if (!data.email || !data.password || !data.name) {
+    if (!data.email || !data.login || !data.phone || !data.password || !data.name) {
       res.writeHead(400, { "Content-Type": "application/json" })
       res.end(JSON.stringify({ message: "Все поля обязательны" }))
       return
@@ -22,18 +22,24 @@ export async function registerController(
 
     const user = createUser(data)
 
+    const session = createSession(user.id, SESSION_TTL_SECONDS)
+    setCookie(res, "sid", session.id, { httpOnly: true, maxAgeSeconds: SESSION_TTL_SECONDS, sameSite: "Lax", path: "/" })
+
     res.writeHead(201, { "Content-Type": "application/json" })
     res.end(JSON.stringify({
       message: "Регистрация успешна",
       user: {
         id: user.id,
         email: user.email,
+        login: user.login,
+        phone: user.phone,
         name: user.name
       }
     }))
-  } catch (error: any) {
+  } catch (error: unknown) {
+    const message = error instanceof Error ? error.message : "Ошибка регистрации"
     res.writeHead(400, { "Content-Type": "application/json" })
-    res.end(JSON.stringify({ message: error.message || "Ошибка регистрации" }))
+    res.end(JSON.stringify({ message }))
   }
 }
 
@@ -45,13 +51,13 @@ export async function loginController(
     const rawBody = await parseBody(req)
     const data = JSON.parse(rawBody)
 
-    if (!data.email || !data.password) {
+    if (!data.identifier || !data.password) {
       res.writeHead(400, { "Content-Type": "application/json" })
-      res.end(JSON.stringify({ message: "Email и пароль обязательны" }))
+      res.end(JSON.stringify({ message: "Логин/email/телефон и пароль обязательны" }))
       return
     }
 
-    const user = findUserByEmail(data.email)
+    const user = findUserByIdentifier(data.identifier)
     
     if (!user) {
       res.writeHead(401, { "Content-Type": "application/json" })
@@ -59,7 +65,7 @@ export async function loginController(
       return
     }
 
-    const isPasswordValid = bcrypt.compareSync(data.password, user.password)
+    const isPasswordValid = verifyUserPassword(user, data.password)
     
     if (!isPasswordValid) {
       res.writeHead(401, { "Content-Type": "application/json" })
@@ -67,11 +73,8 @@ export async function loginController(
       return
     }
 
-    const token = jwt.sign(
-      { id: user.id, email: user.email },
-      JWT_SECRET,
-      { expiresIn: "30d" }
-    )
+    const session = createSession(user.id, SESSION_TTL_SECONDS)
+    setCookie(res, "sid", session.id, { httpOnly: true, maxAgeSeconds: SESSION_TTL_SECONDS, sameSite: "Lax", path: "/" })
 
     res.writeHead(200, { "Content-Type": "application/json" })
     res.end(JSON.stringify({
@@ -79,13 +82,50 @@ export async function loginController(
       user: {
         id: user.id,
         email: user.email,
+        login: user.login,
+        phone: user.phone,
         name: user.name
-      },
-      token
+      }
     }))
 
   } catch (error) {
     res.writeHead(500, { "Content-Type": "application/json" })
     res.end(JSON.stringify({ message: "Ошибка сервера" }))
   }
+}
+
+export async function meController(req: IncomingMessage, res: ServerResponse) {
+  const cookies = parseCookies(req)
+  const sid = cookies.sid
+  if (!sid) {
+    res.writeHead(401, { "Content-Type": "application/json" })
+    res.end(JSON.stringify({ message: "Unauthorized" }))
+    return
+  }
+  const session = getSession(sid)
+  if (!session) {
+    res.writeHead(401, { "Content-Type": "application/json" })
+    res.end(JSON.stringify({ message: "Session expired" }))
+    return
+  }
+  const user = findUserById(session.userId)
+  if (!user) {
+    res.writeHead(401, { "Content-Type": "application/json" })
+    res.end(JSON.stringify({ message: "Unauthorized" }))
+    return
+  }
+  res.writeHead(200, { "Content-Type": "application/json" })
+  res.end(JSON.stringify({ user }))
+}
+
+export async function logoutController(req: IncomingMessage, res: ServerResponse) {
+  const cookies = parseCookies(req)
+  const sid = cookies.sid
+  if (sid) deleteSession(sid)
+
+  // очищаем cookie
+  setCookie(res, "sid", "", { httpOnly: true, maxAgeSeconds: 0, sameSite: "Lax", path: "/" })
+
+  res.writeHead(200, { "Content-Type": "application/json" })
+  res.end(JSON.stringify({ message: "Logged out" }))
 }

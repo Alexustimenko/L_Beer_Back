@@ -1,8 +1,8 @@
 [
-  { "id": 1, "name": "Lager 1", "price": 450, "category": "Cat 1" },
-  { "id": 2, "name": "Wheat 1", "price": 520, "category": "Cat 2" },
-  { "id": 3, "name": "Fest 1", "price": 600, "category": "Cat 3" },
-  { "id": 4, "name": "Dark 1", "price": 480, "category": "Cat 4" },
-  { "id": 5, "name": "Ale 1", "price": 550, "category": "Cat 5" },
-  { "id": 6, "name": "Zero 1", "price": 390, "category": "Cat 1" }
+  { "id": 1, "name": "Lager 1", "description": "Light lager beer with a clean finish.", "price": 450, "category": "Cat 1", "available": true },
+  { "id": 2, "name": "Wheat 1", "description": "Wheat beer with soft фруктовые ноты.", "price": 520, "category": "Cat 2", "available": true },
+  { "id": 3, "name": "Fest 1", "description": "Festbier for Oktoberfest — malty and smooth.", "price": 600, "category": "Cat 3", "available": true },
+  { "id": 4, "name": "Dark 1", "description": "Dark beer with caramel and roasted notes.", "price": 480, "category": "Cat 4", "available": false },
+  { "id": 5, "name": "Ale 1", "description": "Ale with bright aroma and balanced bitterness.", "price": 550, "category": "Cat 5", "available": true },
+  { "id": 6, "name": "Zero 1", "description": "Non-alcoholic beer, crisp and refreshing.", "price": 390, "category": "Cat 1", "available": true }
 ]

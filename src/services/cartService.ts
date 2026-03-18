@@ -2,51 +2,73 @@ import * as fs from "fs";
 import * as path from "path";
 import { Cart, CartItem } from "../types/cart";
 
-const cartPath = path.join(__dirname, "../storage/cart.json");
+type CartsStorage = Record<string, Cart>;
 
-function readCart(): Cart {
-  if (!fs.existsSync(cartPath)) {
-    fs.writeFileSync(cartPath, JSON.stringify({ items: [] }, null, 2));
-    return { items: [] };
+const cartsPath = path.join(__dirname, "../storage/carts.json");
+
+function readCarts(): CartsStorage {
+  if (!fs.existsSync(cartsPath)) {
+    fs.writeFileSync(cartsPath, JSON.stringify({}, null, 2));
+    return {};
   }
-  const raw = fs.readFileSync(cartPath, "utf-8");
-  const parsed = JSON.parse(raw || "{}");
-  return Array.isArray(parsed?.items) ? parsed : { items: [] };
+  const raw = fs.readFileSync(cartsPath, "utf-8");
+  try {
+    const parsed = JSON.parse(raw || "{}");
+    return parsed && typeof parsed === "object" ? (parsed as CartsStorage) : {};
+  } catch {
+    return {};
+  }
 }
 
-function writeCart(cart: Cart): void {
-  fs.writeFileSync(cartPath, JSON.stringify(cart, null, 2));
+function writeCarts(carts: CartsStorage): void {
+  fs.writeFileSync(cartsPath, JSON.stringify(carts, null, 2));
 }
 
-export function getCart(): Cart {
-  return readCart();
+function ensureCart(carts: CartsStorage, userId: string): Cart {
+  const existing = carts[userId];
+  if (existing && Array.isArray(existing.items)) return existing;
+  const fresh: Cart = { items: [] };
+  carts[userId] = fresh;
+  return fresh;
 }
 
-export function updateQuantity(productId: string, quantity: number): Cart {
-  const cart = readCart();
+export function getCart(userId: string): Cart {
+  const carts = readCarts();
+  const cart = ensureCart(carts, userId);
+  writeCarts(carts);
+  return cart;
+}
+
+export function updateQuantity(userId: string, productId: string, quantity: number): Cart {
+  const carts = readCarts();
+  const cart = ensureCart(carts, userId);
 
   const item = cart.items.find(i => i.productId === productId);
   if (item) item.quantity = quantity;
 
-  writeCart(cart);
+  writeCarts(carts);
   return cart;
 }
 
-export function removeItem(productId: string): Cart {
-  const cart = readCart();
+export function removeItem(userId: string, productId: string): Cart {
+  const carts = readCarts();
+  const cart = ensureCart(carts, userId);
 
   cart.items = cart.items.filter(i => i.productId !== productId);
 
-  writeCart(cart);
+  writeCarts(carts);
   return cart;
 }
 
-export function clearCart(): void {
-  writeCart({ items: [] });
+export function clearCart(userId: string): void {
+  const carts = readCarts();
+  carts[userId] = { items: [] };
+  writeCarts(carts);
 }
 
-export function addItem(item: CartItem): Cart {
-  const cart = readCart();
+export function addItem(userId: string, item: CartItem): Cart {
+  const carts = readCarts();
+  const cart = ensureCart(carts, userId);
 
   const existing = cart.items.find(i => i.productId === item.productId);
 
@@ -56,6 +78,6 @@ export function addItem(item: CartItem): Cart {
     cart.items.push(item);
   }
 
-  writeCart(cart);
+  writeCarts(carts);
   return cart;
 }
