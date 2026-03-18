@@ -1,7 +1,9 @@
 export interface RegisterUserDTO {
-  email: string
-  password: string
   name: string
+  email: string
+  login: string
+  phone: string
+  password: string
 }
 
 export interface User extends RegisterUserDTO {

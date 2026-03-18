@@ -14,6 +14,8 @@ export type PaymentMethod = "card" | "cash";
 export interface CheckoutDTO {
   items: CartItem[];
   address: string;
+  email: string;
+  phone: string;
   paymentMethod: PaymentMethod;
   captchaToken: string; // "я не робот"
 }

@@ -2,11 +2,14 @@ import { IncomingMessage, ServerResponse } from "http";
 import { parseBody } from "../utils/bodyParser";
 import { addItem, getCart, updateQuantity, removeItem } from "../services/cartService";
 import { CartItem } from "../types/cart";
+import { requireAuth } from "../utils/requireAuth";
 
 export async function cartController(req: IncomingMessage, res: ServerResponse) {
+  const userId = requireAuth(req, res);
+  if (!userId) return;
 
   if (req.method === "GET") {
-    const cart = getCart();
+    const cart = getCart(userId);
 
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(cart));
@@ -34,7 +37,7 @@ export async function cartController(req: IncomingMessage, res: ServerResponse) 
       return;
     }
     const item: CartItem = { productId, name, price, quantity };
-    const cart = addItem(item);
+    const cart = addItem(userId, item);
 
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(cart));
@@ -55,7 +58,7 @@ export async function cartController(req: IncomingMessage, res: ServerResponse) 
       res.end(JSON.stringify({ message: "productId and quantity required" }));
       return;
     }
-    const cart = updateQuantity(body.productId, body.quantity);
+    const cart = updateQuantity(userId, body.productId, body.quantity);
 
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(cart));
@@ -76,7 +79,7 @@ export async function cartController(req: IncomingMessage, res: ServerResponse) 
       res.end(JSON.stringify({ message: "productId required" }));
       return;
     }
-    const cart = removeItem(body.productId);
+    const cart = removeItem(userId, body.productId);
 
     res.writeHead(200, { "Content-Type": "application/json" });
     res.end(JSON.stringify(cart));

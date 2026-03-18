@@ -20,14 +20,28 @@ function writeUsers(users: User[]): void {
   fs.writeFileSync(usersFile, JSON.stringify(users, null, 2))
 }
 
+function isBcryptHash(value: string): boolean {
+  return typeof value === "string" && value.startsWith("$2");
+}
+
+function upgradePlaintextPasswordIfNeeded(user: User, plainPassword: string, users: User[]): void {
+  if (isBcryptHash(user.password)) return;
+  if (user.password !== plainPassword) return;
+
+  user.password = bcrypt.hashSync(plainPassword, 10);
+  writeUsers(users);
+}
+
 // Создание нового пользователя (регистрация)
 export function createUser(data: RegisterUserDTO): Omit<User, 'password'> {
   const users = readUsers()
 
   // Проверка на существующего пользователя
-  const existingUser = users.find(u => u.email === data.email)
+  const existingUser = users.find(u =>
+    u.email === data.email || u.login === data.login || u.phone === data.phone
+  )
   if (existingUser) {
-    throw new Error('Пользователь с таким email уже существует')
+    throw new Error('Пользователь с такими данными уже существует')
   }
 
   // Хеширование пароля
@@ -36,6 +50,8 @@ export function createUser(data: RegisterUserDTO): Omit<User, 'password'> {
   const newUser: User = {
     id: Date.now().toString(),
     email: data.email,
+    login: data.login,
+    phone: data.phone,
     password: hashedPassword,
     name: data.name
   }
@@ -48,10 +64,40 @@ export function createUser(data: RegisterUserDTO): Omit<User, 'password'> {
   return userWithoutPassword
 }
 
-// Поиск пользователя по email (для входа)
 export function findUserByEmail(email: string): User | null {
   const users = readUsers()
   return users.find(u => u.email === email) || null
+}
+
+export function findUserByLogin(login: string): User | null {
+  const users = readUsers()
+  return users.find(u => u.login === login) || null
+}
+
+export function findUserByPhone(phone: string): User | null {
+  const users = readUsers()
+  return users.find(u => u.phone === phone) || null
+}
+
+export function findUserByIdentifier(identifier: string): User | null {
+  const users = readUsers()
+  return (
+    users.find(u => u.email === identifier || u.login === identifier || u.phone === identifier) ||
+    null
+  )
+}
+
+export function verifyUserPassword(user: User, password: string): boolean {
+  const users = readUsers()
+  const u = users.find(x => x.id === user.id)
+  if (!u) return false
+
+  if (!isBcryptHash(u.password)) {
+    upgradePlaintextPasswordIfNeeded(u, password, users)
+    return u.password === password || bcrypt.compareSync(password, u.password)
+  }
+
+  return bcrypt.compareSync(password, u.password)
 }
 
 // Поиск пользователя по ID
