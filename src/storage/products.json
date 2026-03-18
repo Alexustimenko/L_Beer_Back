@@ -1,8 +1,74 @@
 [
-  { "id": 1, "name": "Lager 1", "description": "Light lager beer with a clean finish.", "price": 450, "category": "Cat 1", "available": true },
-  { "id": 2, "name": "Wheat 1", "description": "Wheat beer with soft фруктовые ноты.", "price": 520, "category": "Cat 2", "available": true },
-  { "id": 3, "name": "Fest 1", "description": "Festbier for Oktoberfest — malty and smooth.", "price": 600, "category": "Cat 3", "available": true },
-  { "id": 4, "name": "Dark 1", "description": "Dark beer with caramel and roasted notes.", "price": 480, "category": "Cat 4", "available": false },
-  { "id": 5, "name": "Ale 1", "description": "Ale with bright aroma and balanced bitterness.", "price": 550, "category": "Cat 5", "available": true },
-  { "id": 6, "name": "Zero 1", "description": "Non-alcoholic beer, crisp and refreshing.", "price": 390, "category": "Cat 1", "available": true }
+  {
+    "id": 1,
+    "name": "Lager 1",
+    "description": "Light lager beer with a clean finish.",
+    "price": 450,
+    "category": "Cat 1",
+    "available": true,
+    "image": "/images/1.jpg"
+  },
+  {
+    "id": 2,
+    "name": "Wheat 1",
+    "description": "Wheat beer with soft фруктовые ноты.",
+    "price": 520,
+    "category": "Cat 2",
+    "available": true,
+    "image": "/images/2.jpg"
+  },
+  {
+    "id": 3,
+    "name": "Fest 1",
+    "description": "Festbier for Oktoberfest — malty and smooth.",
+    "price": 600,
+    "category": "Cat 3",
+    "available": true,
+    "image": "/images/3.jpg"
+  },
+  {
+    "id": 4,
+    "name": "Dark 1",
+    "description": "Dark beer with caramel and roasted notes.",
+    "price": 480,
+    "category": "Cat 4",
+    "available": false,
+    "image": "/images/4.jpg"
+  },
+  {
+    "id": 5,
+    "name": "Ale 1",
+    "description": "Ale with bright aroma and balanced bitterness.",
+    "price": 550,
+    "category": "Cat 5",
+    "available": true,
+    "image": "/images/5.jpg"
+  },
+  {
+    "id": 6,
+    "name": "Zero 1",
+    "description": "Non-alcoholic beer, crisp and refreshing.",
+    "price": 390,
+    "category": "Cat 1",
+    "available": true,
+    "image": "/images/6.jpg"
+  },
+  {
+    "id": 7,
+    "name": "Товар",
+    "description": "Вкусное",
+    "price": 3000,
+    "category": "Cat 1",
+    "available": true,
+    "image": "/images/7.png"
+  },
+  {
+    "id": 8,
+    "name": "Товар2",
+    "description": "ыфв",
+    "price": 100000,
+    "category": "Cat 40",
+    "available": true,
+    "image": "/images/8.png"
+  }
 ]

@@ -5,5 +5,22 @@
     "address": "апртьрмипс",
     "paymentMethod": "card",
     "captchaToken": "iamhuman"
+  },
+  {
+    "id": 1773846143011,
+    "userId": "1773481195190",
+    "items": [
+      {
+        "productId": "2",
+        "name": "Wheat 1",
+        "price": 520,
+        "quantity": 12
+      }
+    ],
+    "address": "94 рафиева",
+    "email": "s9847883@gmail.com",
+    "phone": "80257087643",
+    "paymentMethod": "card",
+    "captchaToken": "iamhuman"
   }
 ]

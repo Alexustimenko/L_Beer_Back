@@ -3,10 +3,35 @@ import { loginController, logoutController, meController, registerController } f
 import { cartController } from "../controllers/cartController";
 import { checkoutController } from "../controllers/checkoutController";
 import { productController } from "../controllers/productController";
+import {
+  adminLoginController,
+  adminLogoutController,
+  adminProductsController,
+} from "../controllers/adminController";
+import { imagesController } from "../controllers/imagesController";
 
 export async function router(req: IncomingMessage, res: ServerResponse) {
 
   const path = req.url?.split("?")[0];
+
+  if (path?.startsWith("/images/")) {
+    await imagesController(req, res);
+    return;
+  }
+
+  if (path === "/admin/login") {
+    await adminLoginController(req, res);
+    return;
+  }
+  if (path === "/admin/logout") {
+    await adminLogoutController(req, res);
+    return;
+  }
+  if (path === "/admin/products") {
+    await adminProductsController(req, res);
+    return;
+  }
+
   if (path === "/register") {
     await registerController(req, res);
     return;

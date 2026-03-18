@@ -5,4 +5,5 @@ export interface Product {
   price: number;
   category: string;
   available: boolean;
+  image?: string; // путь вида /images/xxx.jpg
 }
