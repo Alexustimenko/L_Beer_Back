@@ -3,9 +3,10 @@ import { getProducts } from "../services/productService";
 import { Product } from "../types/product";
 
 export async function productController(req: IncomingMessage, res: ServerResponse) {
-  if (req.method !== "GET") {
-    res.writeHead(405, { "Content-Type": "application/json" });
-    res.end(JSON.stringify({ message: "Method not allowed" }));
+  if (req.method === "GET") {
+    const products = getProducts();
+    res.writeHead(200, { "Content-Type": "application/json" });
+    res.end(JSON.stringify(products));
     return;
   }
 

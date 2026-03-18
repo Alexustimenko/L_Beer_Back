@@ -11,7 +11,6 @@ import {
 import { imagesController } from "../controllers/imagesController";
 
 export async function router(req: IncomingMessage, res: ServerResponse) {
-
   const path = req.url?.split("?")[0];
 
   if (path?.startsWith("/images/")) {
@@ -62,11 +61,21 @@ export async function router(req: IncomingMessage, res: ServerResponse) {
     return;
   }
 
-  if (path === "/checkout") {
+  if (path === "/checkout" && req.method === "POST") {
     await checkoutController(req, res);
     return;
   }
 
+  if (path === "/login" && req.method === "POST") {
+    await loginController(req, res);
+    return;
+  }
+
+  if (path === "/register" && req.method === "POST") {
+    await registerController(req, res);
+    return;
+  }
+
   res.writeHead(404, { "Content-Type": "application/json" });
-  res.end("Not found");
+  res.end(JSON.stringify({ message: "Route not found" }));
 }

@@ -12,8 +12,8 @@ function readProducts(): Product[] {
   }
   const raw = fs.readFileSync(productsPath, "utf-8");
   try {
-    const parsed = JSON.parse(raw || "[]");
-    return Array.isArray(parsed) ? parsed : [];
+    const raw = fs.readFileSync(productsPath, "utf-8");
+    return JSON.parse(raw);
   } catch {
     return [];
   }
